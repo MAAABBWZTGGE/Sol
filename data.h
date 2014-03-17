@@ -38,8 +38,8 @@ public:
     QVector<double> m_gps_lat;
     QVector<double> m_gps_lng;
     QVector<double> m_gps_alt;
-    QVector<double> m_gps_hdop;
-    QVector<double> m_gps_vdop;
+    QVector<double> m_gps_speed;
+    QVector<double> m_gps_prec;
     QVector<double> m_optic_t;
     QVector<double> m_optic_x;
     QVector<double> m_optic_y;

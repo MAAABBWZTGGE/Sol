@@ -160,31 +160,31 @@ void MainWindow::update(quint8 dataAdded)
 
 void MainWindow::updateRaw(quint8 dataAdded)
 {
-    /*switch(dataAdded)
+    switch(dataAdded)
     {
         case ACCELEROMETER:
-            ui->accLastDataLabel->setText(m_data.m_acc.last().toString());
-            ui->accLastTimeLabel->setText(QString::number(m_data.m_acc.getLastReceptionTime()));
-            ui->accRateLabel->setText(QString::number(m_data.m_acc.getRate()));
+            ui->accLastDataLabel->setText(m_data.lastToString(ACCELEROMETER));
+            ui->accLastTimeLabel->setText(QString::number(m_data.getLastReceptionTime(ACCELEROMETER)));
+            ui->accRateLabel->setText(QString::number(m_data.getRate(ACCELEROMETER)));
             break;
         case GYROSCOPE:
-            ui->gyroLastDataLabel->setText(m_data.m_gyro.last().toString());
-            ui->gyroLastTimeLabel->setText(QString::number(m_data.m_gyro.getLastReceptionTime()));
-            ui->gyroRateLabel->setText(QString::number(m_data.m_gyro.getRate()));
+            ui->gyroLastDataLabel->setText(m_data.lastToString(GYROSCOPE));
+            ui->gyroLastTimeLabel->setText(QString::number(m_data.getLastReceptionTime(GYROSCOPE)));
+            ui->gyroRateLabel->setText(QString::number(m_data.getRate(GYROSCOPE)));
             break;
         case GPS:
-            ui->GPSPosLastDataLabel->setText(m_data.m_GPS.last().toStringPos());
-            ui->GPSPosLastTimeLabel->setText(QString::number(m_data.m_GPS.getLastReceptionTime()));
-            ui->GPSPosRateLabel->setText(QString::number(m_data.m_GPS.getRate()));
-            ui->GPSDOPLastDataLabel->setText(m_data.m_GPS.last().toStringPrec());
+            ui->GPSPosLastDataLabel->setText(m_data.lastToString(GPS));
+            ui->GPSPosLastTimeLabel->setText(QString::number(m_data.getLastReceptionTime(GPS)));
+            ui->GPSPosRateLabel->setText(QString::number(m_data.getRate(GPS)));
+            /*ui->GPSDOPLastDataLabel->setText(m_data.m_GPS.last().toStringPrec());
             ui->GPSDOPLastTimeLabel->setText(QString::number(m_data.m_GPS.getLastReceptionTime()));
-            ui->GPSDOPRateLabel->setText(QString::number(m_data.m_GPS.getRate()));
+            ui->GPSDOPRateLabel->setText(QString::number(m_data.m_GPS.getRate()));*/
             break;
         case OPTICFLOW:
             break;
         default:
             break;
-    }*/
+    }
 }
 
 void MainWindow::update3D(quint8 dataAdded)
@@ -225,8 +225,8 @@ void MainWindow::updateGraphs(quint8 dataAdded)
             ui->GPSPlot->graph(0)->setData(m_data.m_gps_t, m_data.m_gps_lat);
             ui->GPSPlot->graph(1)->setData(m_data.m_gps_t, m_data.m_gps_lng);
             ui->GPSPlot->graph(2)->setData(m_data.m_gps_t, m_data.m_gps_alt);
-            ui->GPSErrorPlot->graph(0)->setData(m_data.m_gps_t, m_data.m_gps_hdop);
-            ui->GPSErrorPlot->graph(1)->setData(m_data.m_gps_t, m_data.m_gps_vdop);
+            ui->GPSErrorPlot->graph(0)->setData(m_data.m_gps_t, m_data.m_gps_speed);
+            ui->GPSErrorPlot->graph(1)->setData(m_data.m_gps_t, m_data.m_gps_prec);
             ui->GPSPlot->rescaleAxes();
             ui->GPSErrorPlot->rescaleAxes();
             ui->GPSPlot->replot();
