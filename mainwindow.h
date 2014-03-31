@@ -32,6 +32,7 @@ protected:
     Data m_data;
     Logger m_log;
     quint16 packetSize;
+    time_t last_update;
 
 private slots:
     void incomingConnexion();

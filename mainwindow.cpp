@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     client = NULL;
     packetSize = 0;
+    last_update = QDateTime::currentDateTime().toTime_t();
 }
 
 MainWindow::~MainWindow()
@@ -134,7 +135,9 @@ void MainWindow::dataReceived()
             m_log.log(m_data.lastToString(ORIENTATION));
             break;
     }
-    update(sensor);
+    if( QDateTime::currentDateTime().toTime_t() - last_update > 1000) {
+        update(sensor);
+    }
     packetSize = 0;
     if(client->bytesAvailable() > sizeof(quint16)) {
         dataReceived();
@@ -208,23 +211,23 @@ void MainWindow::update3D(quint8 dataAdded)
 }
 void MainWindow::updateGraphs(quint8 dataAdded)
 {
-    switch(dataAdded)
-    {
-        case ACCELEROMETER:
+    //switch(dataAdded)
+    //{
+    //    case ACCELEROMETER:
             ui->accPlot->graph(0)->setData(m_data.m_acc_t, m_data.m_acc_x);
             ui->accPlot->graph(1)->setData(m_data.m_acc_t, m_data.m_acc_y);
             ui->accPlot->graph(2)->setData(m_data.m_acc_t, m_data.m_acc_z);
             ui->accPlot->rescaleAxes();
             ui->accPlot->replot();
-            break;
-        case GYROSCOPE:
+            //break;
+        //case GYROSCOPE:
             ui->gyroPlot->graph(0)->setData(m_data.m_gyro_t, m_data.m_gyro_x);
             ui->gyroPlot->graph(1)->setData(m_data.m_gyro_t, m_data.m_gyro_y);
             ui->gyroPlot->graph(2)->setData(m_data.m_gyro_t, m_data.m_gyro_z);
             ui->gyroPlot->rescaleAxes();
             ui->gyroPlot->replot();
-            break;
-        case GPS:
+            //break;
+        //case GPS:
             ui->GPSPlot->graph(0)->setData(m_data.m_gps_t, m_data.m_gps_lat);
             ui->GPSPlot->graph(1)->setData(m_data.m_gps_t, m_data.m_gps_lng);
             ui->GPSPlot->graph(2)->setData(m_data.m_gps_t, m_data.m_gps_alt);
@@ -234,23 +237,23 @@ void MainWindow::updateGraphs(quint8 dataAdded)
             ui->GPSErrorPlot->rescaleAxes();
             ui->GPSPlot->replot();
             ui->GPSErrorPlot->replot();
-            break;
-        case OPTICFLOW:
+            //break;
+        //case OPTICFLOW:
             ui->opticFlowPlot->graph(0)->setData(m_data.m_optic_t, m_data.m_optic_x);
             ui->opticFlowPlot->graph(1)->setData(m_data.m_optic_t, m_data.m_optic_y);
             ui->opticFlowPlot->rescaleAxes();
             ui->opticFlowPlot->replot();
-            break;
-        case ORIENTATION:
+            //break;
+        //case ORIENTATION:
             ui->orientationPlot->graph(0)->setData(m_data.m_orientation_t, m_data.m_orientation_x);
             ui->orientationPlot->graph(1)->setData(m_data.m_orientation_t, m_data.m_orientation_y);
             ui->orientationPlot->graph(2)->setData(m_data.m_orientation_t, m_data.m_orientation_z);
             ui->orientationPlot->rescaleAxes();
             ui->orientationPlot->replot();
-            break;
-        default:
-            break;
-    }
+            //break;
+        //default:
+            //break;
+    //}
 }
 void MainWindow::updateHistory(quint8 dataAdded)
 {
