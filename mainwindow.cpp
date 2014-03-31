@@ -136,6 +136,9 @@ void MainWindow::dataReceived()
     }
     update(sensor);
     packetSize = 0;
+    if(client->bytesAvailable() > sizeof(quint16)) {
+        dataReceived();
+    }
 }
 
 void MainWindow::clientDisconnection()

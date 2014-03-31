@@ -107,19 +107,25 @@ QString Data::lastToString(Sensor s) {
     switch(s)
     {
     case ACCELEROMETER:
-        return QString("acc ") + QString::number(m_acc_t.last()) + QString(" ") + QString::number(m_acc_x.last()) + QString(" ") + QString::number(m_acc_y.last()) + QString(" ") + QString::number(m_acc_z.last()) + QString("\n");
+        return QString("acc ") + QString::number(m_acc_t.last()) + QString(" ") + QString::number(m_acc_x.last()) +
+                QString(" ") + QString::number(m_acc_y.last()) + QString(" ") + QString::number(m_acc_z.last()) + QString("\n");
         break;
     case GYROSCOPE:
-        return QString("gyro ") + QString::number(m_gyro_t.last()) + QString(" ") + QString::number(m_gyro_x.last()) + QString(" ") + QString::number(m_gyro_y.last()) + QString(" ") + QString::number(m_gyro_z.last()) + QString("\n");
+        return QString("gyro ") + QString::number(m_gyro_t.last()) + QString(" ") + QString::number(m_gyro_x.last()) +
+                QString(" ") + QString::number(m_gyro_y.last()) + QString(" ") + QString::number(m_gyro_z.last()) + QString("\n");
         break;
     case GPS:
-        return QString("gps ") + QString::number(m_gps_t.last()) + QString(" ") + QString::number(m_gps_lat.last()) + QString(" ") + QString::number(m_gps_lng.last()) + QString(" ") + QString::number(m_gps_alt.last()) + QString(" ") + QString::number(m_gps_speed.last()) + QString(" ") + QString::number(m_gps_prec.last()) + QString("\n");
+        return QString("gps ") + QString::number(m_gps_t.last()) + QString(" ") + QString::number(m_gps_lat.last()) + QString(" ") +
+                QString::number(m_gps_lng.last()) + QString(" ") + QString::number(m_gps_alt.last()) + QString(" ") +
+                QString::number(m_gps_speed.last()) + QString(" ") + QString::number(m_gps_prec.last()) + QString("\n");
         break;
     case OPTICFLOW:
-        return QString("optic ") + QString::number(m_optic_t.last()) + QString(" ") + QString::number(m_optic_x.last()) + QString(" ") + QString::number(m_optic_y.last()) + QString("\n");
+        return QString("optic ") + QString::number(m_optic_t.last()) + QString(" ") + QString::number(m_optic_x.last()) + QString(" ") +
+                QString::number(m_optic_y.last()) + QString("\n");
         break;
     case ORIENTATION:
-        return QString("orientation ") + QString::number(m_orientation_t.last()) + QString(" ") + QString::number(m_orientation_x.last()) + QString(" ") + QString::number(m_orientation_y.last()) + QString(" ") + QString::number(m_orientation_z.last()) + QString("\n");
+        return QString("orientation ") + QString::number(m_orientation_t.last()) + QString(" ") + QString::number(m_orientation_x.last()) +
+                QString(" ") + QString::number(m_orientation_y.last()) + QString(" ") + QString::number(m_orientation_z.last()) + QString("\n");
         break;
     case MAGNETICFIELD:
         return QString();
