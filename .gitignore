@@ -12,6 +12,7 @@
 
 # Qt-es
 
+PSC-Sol.pro.user
 *.pro.user
 *.pro.user.*
 moc_*.cpp
