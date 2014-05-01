@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->accPlot->graph(1)->setPen(QPen(Qt::green));
     ui->accPlot->addGraph();
     ui->accPlot->graph(2)->setPen(QPen(Qt::blue));
-
+    ui->accPlot->yAxis->setRange(-12, 12);
 
     ui->gyroPlot->addGraph();
     ui->gyroPlot->graph(0)->setPen(QPen(Qt::red));
@@ -25,10 +25,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gyroPlot->graph(1)->setPen(QPen(Qt::green));
     ui->gyroPlot->addGraph();
     ui->gyroPlot->graph(2)->setPen(QPen(Qt::blue));
+    ui->gyroPlot->yAxis->setRange(-60, 60);
 
     ui->GPSPlot->addGraph();
     ui->GPSPlot->graph(0)->setPen(QPen(Qt::red));
-    ui->GPSPlot->addGraph();
+    ui->GPSPlot->addGraph(ui->GPSPlot->xAxis, ui->GPSPlot->yAxis2);
+    ui->GPSPlot->yAxis2->setVisible(true);
     ui->GPSPlot->graph(1)->setPen(QPen(Qt::green));
     ui->GPSPlot->addGraph();
     ui->GPSPlot->graph(2)->setPen(QPen(Qt::blue));
@@ -94,54 +96,67 @@ void MainWindow::dataReceived()
 {
     QDataStream in(client);
     in.setByteOrder(QDataStream::BigEndian);
-    if(packetSize == 0)
-    {
-        if(client->bytesAvailable() < (qint64) sizeof(quint16))
+    while(client->bytesAvailable() >= 2) {
+        if(packetSize == 0)
+        {
+            in >> packetSize;
+        }
+        if(client->bytesAvailable() < packetSize)
         {
             return;
         }
-        in >> packetSize;
+        quint8 sensor;
+        in >> sensor;
+        switch(sensor) {
+            case ACCELEROMETER:
+                m_data.addAcc(in);
+                ui->statusBar->showMessage("Acc received");
+                m_log.log(m_data.lastToString(ACCELEROMETER));
+                std::cout << m_data.lastToString(ACCELEROMETER).toStdString();
+                break;
+            case GYROSCOPE:
+                m_data.addGyro(in);
+                ui->statusBar->showMessage("Gyro received");
+                m_log.log(m_data.lastToString(GYROSCOPE));
+                std::cout << m_data.lastToString(GYROSCOPE).toStdString();
+                break;
+            case GPS:
+                m_data.addGPS(in);
+                ui->statusBar->showMessage("GPS received");
+                m_log.log(m_data.lastToString(GPS));
+                std::cout << m_data.lastToString(GPS).toStdString();
+                break;
+            case OPTICFLOW:
+                m_data.addOpticFlow(in);
+                ui->statusBar->showMessage("OF received");
+                m_log.log(m_data.lastToString(OPTICFLOW));
+                std::cout << m_data.lastToString(OPTICFLOW).toStdString();
+                break;
+            case ORIENTATION:
+                m_data.addOrientation(in);
+                ui->statusBar->showMessage("Orientation received");
+                m_log.log(m_data.lastToString(ORIENTATION));
+                std::cout << m_data.lastToString(ORIENTATION).toStdString();
+                break;
+            case COMMAND:
+                quint32 r = 0;
+                in >> r;
+                float* pr  = (float*)&r;
+                std::cout << "Read: " << QString::number(*pr).toStdString();
+        }
+        packetSize = 0;
+        //Update at most once every second
+        if(client->bytesAvailable() > 0) {
+            in.skipRawData(client->bytesAvailable());
+        }
+        if( QDateTime::currentDateTime().toTime_t() - last_update > 0) {
+            std::cout << "Updating" << std::endl;
+            update(sensor);
+            std::cout << "Update done" << std::endl;
+            last_update = QDateTime::currentDateTime().toTime_t();
+        }
     }
-    if(client->bytesAvailable() < packetSize)
-    {
-        return;
-    }
-    quint8 sensor;
-    in >> sensor;
-    switch(sensor) {
-        case ACCELEROMETER:
-            m_data.addAcc(in);
-            ui->statusBar->showMessage("Acc received");
-            m_log.log(m_data.lastToString(ACCELEROMETER));
-            break;
-        case GYROSCOPE:
-            m_data.addGyro(in);
-            ui->statusBar->showMessage("Gyro received");
-            m_log.log(m_data.lastToString(GYROSCOPE));
-            break;
-        case GPS:
-            m_data.addGPS(in);
-            ui->statusBar->showMessage("GPS received");
-            m_log.log(m_data.lastToString(GPS));
-            break;
-        case OPTICFLOW:
-            m_data.addOpticFlow(in);
-            ui->statusBar->showMessage("OF received");
-            m_log.log(m_data.lastToString(OPTICFLOW));
-            break;
-        case ORIENTATION:
-            m_data.addOrientation(in);
-            ui->statusBar->showMessage("Orientation received");
-            m_log.log(m_data.lastToString(ORIENTATION));
-            break;
-    }
-    if( QDateTime::currentDateTime().toTime_t() - last_update > 1000) {
-        update(sensor);
-    }
-    packetSize = 0;
-    if(client->bytesAvailable() > sizeof(quint16)) {
-        dataReceived();
-    }
+
 }
 
 void MainWindow::clientDisconnection()
@@ -217,39 +232,49 @@ void MainWindow::updateGraphs(quint8 dataAdded)
             ui->accPlot->graph(0)->setData(m_data.m_acc_t, m_data.m_acc_x);
             ui->accPlot->graph(1)->setData(m_data.m_acc_t, m_data.m_acc_y);
             ui->accPlot->graph(2)->setData(m_data.m_acc_t, m_data.m_acc_z);
-            ui->accPlot->rescaleAxes();
-            ui->accPlot->replot();
+            if(m_data.m_acc_t.size() > 1) {
+                ui->accPlot->rescaleAxes();
+                ui->accPlot->replot();
+            }
             //break;
         //case GYROSCOPE:
             ui->gyroPlot->graph(0)->setData(m_data.m_gyro_t, m_data.m_gyro_x);
             ui->gyroPlot->graph(1)->setData(m_data.m_gyro_t, m_data.m_gyro_y);
             ui->gyroPlot->graph(2)->setData(m_data.m_gyro_t, m_data.m_gyro_z);
-            ui->gyroPlot->rescaleAxes();
-            ui->gyroPlot->replot();
+            if(m_data.m_gyro_t.size() > 1) {
+                ui->gyroPlot->rescaleAxes();
+                ui->gyroPlot->replot();
+
+            }
             //break;
         //case GPS:
             ui->GPSPlot->graph(0)->setData(m_data.m_gps_t, m_data.m_gps_lat);
             ui->GPSPlot->graph(1)->setData(m_data.m_gps_t, m_data.m_gps_lng);
-            ui->GPSPlot->graph(2)->setData(m_data.m_gps_t, m_data.m_gps_alt);
+            //ui->GPSPlot->graph(2)->setData(m_data.m_gps_t, m_data.m_gps_alt);
             ui->GPSErrorPlot->graph(0)->setData(m_data.m_gps_t, m_data.m_gps_speed);
             ui->GPSErrorPlot->graph(1)->setData(m_data.m_gps_t, m_data.m_gps_prec);
-            ui->GPSPlot->rescaleAxes();
-            ui->GPSErrorPlot->rescaleAxes();
-            ui->GPSPlot->replot();
-            ui->GPSErrorPlot->replot();
+
+            if(m_data.m_gps_t.size() > 1) {
+                ui->GPSPlot->rescaleAxes();
+                ui->GPSErrorPlot->rescaleAxes();
+                ui->GPSPlot->replot();
+                ui->GPSErrorPlot->replot();
+            }
             //break;
         //case OPTICFLOW:
-            ui->opticFlowPlot->graph(0)->setData(m_data.m_optic_t, m_data.m_optic_x);
+            /*ui->opticFlowPlot->graph(0)->setData(m_data.m_optic_t, m_data.m_optic_x);
             ui->opticFlowPlot->graph(1)->setData(m_data.m_optic_t, m_data.m_optic_y);
             ui->opticFlowPlot->rescaleAxes();
-            ui->opticFlowPlot->replot();
+            ui->opticFlowPlot->replot();*/
             //break;
         //case ORIENTATION:
             ui->orientationPlot->graph(0)->setData(m_data.m_orientation_t, m_data.m_orientation_x);
             ui->orientationPlot->graph(1)->setData(m_data.m_orientation_t, m_data.m_orientation_y);
             ui->orientationPlot->graph(2)->setData(m_data.m_orientation_t, m_data.m_orientation_z);
-            ui->orientationPlot->rescaleAxes();
-            ui->orientationPlot->replot();
+            if(m_data.m_orientation_t.size() > 1) {
+                ui->orientationPlot->rescaleAxes();
+                ui->orientationPlot->replot();
+            }
             //break;
         //default:
             //break;

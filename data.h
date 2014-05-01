@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-enum Sensor {ACCELEROMETER = 0, GYROSCOPE = 1, GPS = 2, OPTICFLOW = 3, ORIENTATION = 4, MAGNETICFIELD = 5};
+enum Sensor {ACCELEROMETER = 0, GYROSCOPE = 1, GPS = 2, OPTICFLOW = 3, ORIENTATION = 4, MAGNETICFIELD = 5, COMMAND = 6};
 
 
 class Data
